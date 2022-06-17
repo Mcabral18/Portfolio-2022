@@ -30,7 +30,7 @@ function Preloader({ setAnimationComplete }) {
                     ease: "power3.out"
                 })
                 .to("nav", {
-                    duration: 1.2,
+                    duration: 1,
                     y: 0,
                     delay: 0.1,
                     opacity: 1,
