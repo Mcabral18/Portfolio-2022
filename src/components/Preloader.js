@@ -30,12 +30,17 @@ function Preloader({ setAnimationComplete }) {
                     ease: "power3.out"
                 })
                 .to("nav", {
-                    duration: 1,
+                    duration: .5,
                     y: 0,
-                    delay: 0.1,
                     opacity: 1,
                     ease: "power3.out"
-                });
+                })
+                .to(".scroll-indicator", {
+                    duration: .6,
+                    opacity: .4,
+                    ease: "power3.out"
+                })
+                ;
         };
         homeAnimation(completeAnimation);
     });

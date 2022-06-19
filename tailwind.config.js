@@ -7,6 +7,9 @@ module.exports = {
         grey: '#e1e1e1',
         darkGrey: '#6B7280',
       },
+      scale:{
+        custom1: '1.1',
+      },
     },
     fontFamily: {
       title: ["Raleway"],

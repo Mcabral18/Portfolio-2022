@@ -43,7 +43,9 @@ function Home() {
                     </div>
                 </div>
             </div>
+            <div className="scroll-indicator absolute bottom-32 md:bottom-8"></div>
         </div>
+        
     );
 }
 

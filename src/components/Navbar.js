@@ -33,13 +33,13 @@ const Navbar = () => {
 
     //Scroll Trigger
     const [scroll, setScroll] = useState('')
+    
     useEffect(() => {
         window.addEventListener("scroll", () => {
             setScroll(window.scrollY > 130)
         })
     }, [])
 
-    console.log(scroll);
     return (
         <nav className={scroll ? "flex justify-between items-center w-full h-20 px-4 md:px-8 text-white fixed top-0 bg-gradient-to-b from-black via-black to-gray-800 z-10" : "flex justify-between items-center w-full h-20 px-4 md:px-8 text-white bg-black fixed -translate-y-24 z-10"}>
             <div className="relative">
