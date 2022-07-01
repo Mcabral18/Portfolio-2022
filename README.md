@@ -1,4 +1,4 @@
 ## Personal Portfolio
 
-React | Tailwind | Gsap
+React | React Scroll | Tailwind | Gsap | Animations 
 
