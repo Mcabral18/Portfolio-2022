@@ -4,6 +4,7 @@ import Preloader from './components/Preloader';
 import Navbar from './components/Navbar';
 import Home from "./pages-blocks/Home";
 import About from "./pages-blocks/About";
+import Experience from "./pages-blocks/Experience";
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
       <Navbar />
       <Home />
       <About />
+      <Experience />
       {/* Page Layout */}
       {/* Import Footer */}
 
