@@ -5,7 +5,9 @@ import Navbar from './components/Navbar';
 import Home from "./pages-blocks/Home";
 import About from "./pages-blocks/About";
 import Experience from "./pages-blocks/Experience";
-
+import Portfolio from "./pages-blocks/Portfolio";
+import Contact from "./pages-blocks/Contact";
+import Footer from "./components/Footer";
 
 function App() {
 
@@ -20,6 +22,9 @@ function App() {
       <Home />
       <About />
       <Experience />
+      <Portfolio />
+      <Contact />
+      <Footer />
       {/* Page Layout */}
       {/* Import Footer */}
 
