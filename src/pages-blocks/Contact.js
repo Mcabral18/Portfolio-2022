@@ -1,5 +1,6 @@
 import React from "react";
 
+
 const Contact = () => {
     return (
         <div
@@ -16,7 +17,7 @@ const Contact = () => {
 
                 <div className=" flex justify-center items-center">
                     <form
-                        action="https://getform.io/f/096c529a-984b-4d93-b65c-91b30624a372"
+                        action={process.env.REACT_APP_FORM_KEY}
                         method="POST"
                         className=" flex flex-col w-full md:w-1/2"
                     >
@@ -35,7 +36,7 @@ const Contact = () => {
                         <textarea
                             name="message"
                             placeholder="Enter your message"
-                            rows="5"
+                            rows="3"
                             className="p-2 bg-transparent border-b-2 border-cyan-500  text-white focus:outline-none"
                         ></textarea>
 

@@ -1,13 +1,13 @@
 import React from "react";
-import { Link } from "react-scroll";
+import forumAveiro from "../assets/portfolio/forumaveiro.png";
 import kiaPortugal from "../assets/portfolio/reactSmooth.jpg";
 
 const Portfolio = () => {
     const portfolios = [
         {
             id: 1,
-            src: kiaPortugal,
-            demo: "https://google.pt",
+            src: forumAveiro,
+            demo: "https://forumaveiro.com/",
             github: ""
         },
         {
@@ -65,7 +65,7 @@ const Portfolio = () => {
                             />
                             <div className="flex items-center justify-center">
                                 <button className="w-1/2 px-6 py-3 m-4 duration-200 hover:scale-105">
-                                    <a target="_blank" href={demo} >Demo</a>
+                                    <a target="_blank" href={demo} >Website</a>
                                 </button>
                                 {/* {
                                     github === 0 ? "" :
