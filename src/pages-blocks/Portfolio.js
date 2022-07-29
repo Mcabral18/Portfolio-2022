@@ -1,6 +1,9 @@
 import React from "react";
 import forumAveiro from "../assets/portfolio/forumaveiro.png";
-import kiaPortugal from "../assets/portfolio/reactSmooth.jpg";
+import Natixis from "../assets/portfolio/natixis.png";
+import Blip from "../assets/portfolio/blip.png";
+import Conquistador from "../assets/portfolio/conquistador.png";
+import kiaPortugal from "../assets/portfolio/kia.png";
 
 const Portfolio = () => {
     const portfolios = [
@@ -12,32 +15,32 @@ const Portfolio = () => {
         },
         {
             id: 2,
-            src: kiaPortugal,
-            demo: "https://google.pt",
-            github: "https://google.pt"
+            src: Natixis,
+            demo: "https://wewantyourbrain.com/",
+            github: ""
         },
         {
             id: 3,
-            src: kiaPortugal,
-            demo: "https://google.pt",
-            github: "https://google.pt"
+            src: Blip,
+            demo: "https://www.blip.deliverymanager.pt/",
+            github: ""
         },
         {
             id: 4,
-            src: kiaPortugal,
-            demo: "https://google.pt",
-            github: "https://google.pt"
+            src: Conquistador,
+            demo: "https://conquistadorpalace.pt/",
+            github: ""
         },
         {
             id: 5,
             src: kiaPortugal,
-            demo: "https://google.pt",
-            github: "https://google.pt"
+            demo: "https://kia.pt",
+            github: ""
         },
         {
             id: 6,
             src: kiaPortugal,
-            demo: "https://google.pt",
+            demo: "https://m.kia.pt",
             github: ""
         },
     ];
