@@ -4,6 +4,7 @@ import '@fontsource-variable/inter';
 import '@fontsource/jetbrains-mono/400.css';
 import '../styles/global.css';
 import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
 import { site } from '../data/site';
 
 interface Props {
@@ -63,6 +64,7 @@ const jsonLd = {
     <script is:inline>document.documentElement.classList.add('js');</script>
 
     <Analytics />
+    <SpeedInsights />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
