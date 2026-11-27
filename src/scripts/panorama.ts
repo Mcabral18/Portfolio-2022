@@ -56,16 +56,21 @@ const compile = (gl: WebGL2RenderingContext, type: number, src: string) => {
 
 export function initPanorama(host: HTMLElement) {
   const canvas = host.querySelector('canvas')!;
-  const src = host.dataset.src!;
   const startYaw = Number(host.dataset.startYaw ?? 0);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Phones/tablets: 2K texture (4× less GPU memory, much faster upload) and lower render resolution
+  const lite = window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
+  const maxDpr = lite ? 1.25 : 2;
 
-  const gl = canvas.getContext('webgl2', { antialias: false, alpha: false });
+  const gl = canvas.getContext('webgl2', { antialias: false, alpha: false, powerPreference: 'low-power' });
+  const canUse4k = !!gl && gl.getParameter(gl.MAX_TEXTURE_SIZE) >= 4096;
+  const src = !lite && canUse4k ? host.dataset.src! : host.dataset.srcSmall ?? host.dataset.src!;
+
   const fallback = () => {
     host.classList.add('is-fallback');
-    host.style.backgroundImage = `url(${src})`;
+    host.style.backgroundImage = `url(${host.dataset.srcSmall ?? src})`;
   };
-  if (!gl || gl.getParameter(gl.MAX_TEXTURE_SIZE) < 4096) return fallback();
+  if (!gl) return fallback();
 
   let program: WebGLProgram;
   try {
@@ -111,7 +116,7 @@ export function initPanorama(host: HTMLElement) {
   let height = 1;
 
   const resize = () => {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
     const r = canvas.getBoundingClientRect();
     width = r.width;
     height = r.height;
@@ -160,26 +165,37 @@ export function initPanorama(host: HTMLElement) {
     cancelAnimationFrame(raf);
   };
 
-  const load = () => {
-    const img = new Image();
-    img.decoding = 'async';
-    img.onload = () => {
-      const tex = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, tex);
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      loaded = true;
-      host.classList.add('is-loaded');
-      resize();
-      render();
-      play();
-    };
-    img.onerror = fallback;
-    img.src = src;
+  const upload = (source: TexImageSource) => {
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, source);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    loaded = true;
+    host.classList.add('is-loaded');
+    resize();
+    render();
+    play();
+  };
+
+  const load = async () => {
+    try {
+      // Decode off the main thread so the upload doesn't freeze scrolling
+      const blob = await (await fetch(src)).blob();
+      const bitmap = await createImageBitmap(blob);
+      upload(bitmap);
+      bitmap.close();
+    } catch {
+      // Older browsers: regular <img> decode
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => upload(img);
+      img.onerror = fallback;
+      img.src = src;
+    }
   };
 
   // Interaction
@@ -239,7 +255,7 @@ export function initPanorama(host: HTMLElement) {
         load();
       }
     },
-    { rootMargin: '600px 0px' },
+    { rootMargin: lite ? '200px 0px' : '400px 0px' },
   );
   loader.observe(host);
 

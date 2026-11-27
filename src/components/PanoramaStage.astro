@@ -1,13 +1,14 @@
 ---
 interface Props {
   src: string;
+  srcSmall: string;
   credit: string;
   startYaw?: number;
 }
-const { src, credit, startYaw = 0 } = Astro.props;
+const { src, srcSmall, credit, startYaw = 0 } = Astro.props;
 ---
 
-<div class="stage stage--pano" data-panorama data-src={src} data-start-yaw={startYaw}>
+<div class="stage stage--pano" data-panorama data-src={src} data-src-small={srcSmall} data-start-yaw={startYaw}>
   <canvas
     tabindex="0"
     role="img"
@@ -68,8 +69,7 @@ const { src, credit, startYaw = 0 } = Astro.props;
     height: 38px;
     border: 1px solid var(--c-line-strong);
     border-radius: 50%;
-    background: rgb(20 26 25 / 0.55);
-    backdrop-filter: blur(6px);
+    background: rgb(20 26 25 / 0.8);
   }
   .compass__needle {
     position: absolute;

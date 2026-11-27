@@ -93,26 +93,26 @@ import { site } from '../data/site';
     to { transform: translate(64px, 64px); }
   }
 
-  /* Two slow, heavily blurred light pools */
+  /* Two slow light pools — soft radial gradients (a blur() filter looks the same but is far costlier on mobile GPUs) */
   .hero__orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(90px);
+    will-change: transform;
     animation: orb-float 26s ease-in-out infinite alternate;
   }
   .hero__orb--teal {
-    width: 38vw;
+    width: 52vw;
     aspect-ratio: 1;
-    left: 2%;
-    top: 8%;
-    background: rgb(17 100 102 / 0.35);
+    left: -6%;
+    top: -4%;
+    background: radial-gradient(circle, rgb(17 100 102 / 0.32), rgb(17 100 102 / 0.12) 40%, transparent 70%);
   }
   .hero__orb--peach {
-    width: 26vw;
+    width: 38vw;
     aspect-ratio: 1;
-    right: 4%;
-    bottom: -6%;
-    background: rgb(255 203 154 / 0.1);
+    right: -4%;
+    bottom: -18%;
+    background: radial-gradient(circle, rgb(255 203 154 / 0.1), rgb(255 203 154 / 0.04) 40%, transparent 70%);
     animation-duration: 32s;
     animation-direction: alternate-reverse;
   }
@@ -294,11 +294,17 @@ import { site } from '../data/site';
     .hero__grid {
       mask-image: radial-gradient(ellipse 70% 40% at 50% 30%, #000 0%, transparent 75%);
     }
+    /* Static background on phones: the canvas already provides the motion */
+    .hero__grid,
+    .hero__orb {
+      animation: none;
+      will-change: auto;
+    }
     .hero__orb--teal {
-      width: 80vw;
+      width: 110vw;
     }
     .hero__orb--peach {
-      width: 60vw;
+      width: 80vw;
     }
     .hero__content {
       padding-bottom: 2.5rem;

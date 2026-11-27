@@ -3,8 +3,8 @@ export type Group = 'SaaS & Apps' | 'Immersive & WebAR' | 'Brand & Corporate';
 /** What fills the large visual of a featured project. */
 export type FeaturedMedia =
   | { kind: 'svg'; motif: 'geofence' }
-  | { kind: 'model'; src: string; alt: string; credit: string }
-  | { kind: 'panorama'; src: string; credit: string; startYaw?: number };
+  | { kind: 'model'; src: string; poster: string; alt: string; credit: string }
+  | { kind: 'panorama'; src: string; srcSmall: string; credit: string; startYaw?: number };
 
 export interface FeaturedProject {
   name: string;
@@ -47,6 +47,7 @@ export const featured: FeaturedProject[] = [
     media: {
       kind: 'model',
       src: '/models/cosmic-buddha.glb',
+      poster: '/models/cosmic-buddha-poster.jpg',
       alt: 'Laser scan of the "Cosmic Buddha", a 6th-century carved limestone statue from China',
       credit: '"Cosmic Buddha" scan: Smithsonian NMAA · CC0',
     },
@@ -62,6 +63,7 @@ export const featured: FeaturedProject[] = [
     media: {
       kind: 'panorama',
       src: '/panoramas/waterfront-4k.jpg',
+      srcSmall: '/panoramas/waterfront-2k.jpg',
       credit: 'Demo panorama: Greg Zaal / Poly Haven · CC0',
       startYaw: 0.63,
     },

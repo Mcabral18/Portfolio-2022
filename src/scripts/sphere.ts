@@ -86,6 +86,8 @@ export function initSphere(canvas: HTMLCanvasElement, host: HTMLElement = canvas
   if (!ctx) return;
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Phones/tablets: lower canvas resolution and fewer light passes
+  const lite = window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
   const { verts, faces } = icosphere(2);
   const rand = mulberry32(18);
   const warmDir = normalize([-0.55, 0.55, 0.6]);
@@ -113,7 +115,7 @@ export function initSphere(canvas: HTMLCanvasElement, host: HTMLElement = canvas
   type Mote = { x: number; y: number; r: number; speed: number; phase: number; warm: boolean };
   let dust: Mote[] = [];
   const seedDust = () => {
-    const count = Math.min(70, Math.round((width * height) / 20000));
+    const count = Math.min(lite ? 28 : 70, Math.round((width * height) / 20000));
     dust = Array.from({ length: count }, () => ({
       x: Math.random(),
       y: Math.random(),
@@ -151,9 +153,36 @@ export function initSphere(canvas: HTMLCanvasElement, host: HTMLElement = canvas
   let last = performance.now();
   const start = last;
 
+  // Gradients depend only on size/position → built once per resize, not every frame
+  let haloGrad: CanvasGradient | null = null;
+  let coreGrad: CanvasGradient | null = null;
+  let rayGrads: CanvasGradient[] = [];
+
+  const buildGradients = () => {
+    haloGrad = ctx.createRadialGradient(cx, cy, R * 1.18, cx, cy, R * 1.6);
+    haloGrad.addColorStop(0, rgba(PALETTE.tealGlow, 0));
+    haloGrad.addColorStop(0.45, rgba(PALETTE.tealGlow, 0.09));
+    haloGrad.addColorStop(1, rgba(PALETTE.tealGlow, 0));
+
+    coreGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.05);
+    coreGrad.addColorStop(0, rgba([255, 255, 255], 0.95));
+    coreGrad.addColorStop(0.12, rgba(PALETTE.mint, 0.75));
+    coreGrad.addColorStop(0.35, rgba(PALETTE.tealGlow, 0.35));
+    coreGrad.addColorStop(1, rgba(PALETTE.tealGlow, 0));
+
+    // Rays are drawn in a local frame (pointing along +x) and rotated into place
+    rayGrads = rays.map((ray) => {
+      const g = ctx.createLinearGradient(0, 0, R * ray.length, 0);
+      g.addColorStop(0, rgba(PALETTE.mint, ray.alpha));
+      g.addColorStop(0.35, rgba(PALETTE.tealGlow, ray.alpha * 0.5));
+      g.addColorStop(1, rgba(PALETTE.tealGlow, 0));
+      return g;
+    });
+  };
+
   const resize = () => {
     const rect = canvas.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, lite ? 1.25 : 2);
     width = rect.width;
     height = rect.height;
     canvas.width = Math.round(width * dpr);
@@ -169,6 +198,7 @@ export function initSphere(canvas: HTMLCanvasElement, host: HTMLElement = canvas
       cy = height * 0.3;
       R = Math.min(width * 0.28, height * 0.15);
     }
+    buildGradients();
     seedDust();
     if (!running) draw(performance.now());
   };
@@ -191,14 +221,12 @@ export function initSphere(canvas: HTMLCanvasElement, host: HTMLElement = canvas
   };
 
   const drawHalo = (t: number, intro: number) => {
-    const g = ctx.createRadialGradient(cx, cy, R * 1.18, cx, cy, R * 1.6);
-    g.addColorStop(0, rgba(PALETTE.tealGlow, 0));
-    g.addColorStop(0.45, rgba(PALETTE.tealGlow, 0.09 * intro));
-    g.addColorStop(1, rgba(PALETTE.tealGlow, 0));
-    ctx.fillStyle = g;
+    ctx.globalAlpha = intro;
+    ctx.fillStyle = haloGrad!;
     ctx.beginPath();
     ctx.arc(cx, cy, R * 1.6, 0, Math.PI * 2);
     ctx.fill();
+    ctx.globalAlpha = 1;
 
     ctx.lineWidth = 1;
     ctx.strokeStyle = rgba(PALETTE.mint, 0.16 * intro);
@@ -229,41 +257,34 @@ export function initSphere(canvas: HTMLCanvasElement, host: HTMLElement = canvas
   };
 
   const drawRays = (t: number, strength: number) => {
+    if (strength <= 0.01) return;
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
-    for (const ray of rays) {
-      const a = ray.angle + t * 0.025;
+    ctx.globalAlpha = Math.min(1, strength);
+    ctx.translate(cx, cy);
+    rays.forEach((ray, i) => {
       const len = R * ray.length;
-      const ex = cx + Math.cos(a) * len;
-      const ey = cy + Math.sin(a) * len;
-      const nx = -Math.sin(a);
-      const ny = Math.cos(a);
       const w = R * ray.width;
-      const g = ctx.createLinearGradient(cx, cy, ex, ey);
-      g.addColorStop(0, rgba(PALETTE.mint, ray.alpha * strength));
-      g.addColorStop(0.35, rgba(PALETTE.tealGlow, ray.alpha * 0.5 * strength));
-      g.addColorStop(1, rgba(PALETTE.tealGlow, 0));
-      ctx.fillStyle = g;
+      ctx.save();
+      ctx.rotate(ray.angle + t * 0.025);
+      ctx.fillStyle = rayGrads[i];
       ctx.beginPath();
-      ctx.moveTo(cx + nx * 1.5, cy + ny * 1.5);
-      ctx.lineTo(ex + nx * w, ey + ny * w);
-      ctx.lineTo(ex - nx * w, ey - ny * w);
-      ctx.lineTo(cx - nx * 1.5, cy - ny * 1.5);
+      ctx.moveTo(0, 1.5);
+      ctx.lineTo(len, w);
+      ctx.lineTo(len, -w);
+      ctx.lineTo(0, -1.5);
       ctx.closePath();
       ctx.fill();
-    }
+      ctx.restore();
+    });
     ctx.restore();
   };
 
   const drawCore = (strength: number) => {
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
-    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.05);
-    g.addColorStop(0, rgba([255, 255, 255], 0.95 * strength));
-    g.addColorStop(0.12, rgba(PALETTE.mint, 0.75 * strength));
-    g.addColorStop(0.35, rgba(PALETTE.tealGlow, 0.35 * strength));
-    g.addColorStop(1, rgba(PALETTE.tealGlow, 0));
-    ctx.fillStyle = g;
+    ctx.globalAlpha = Math.min(1, strength);
+    ctx.fillStyle = coreGrad!;
     ctx.beginPath();
     ctx.arc(cx, cy, R * 1.05, 0, Math.PI * 2);
     ctx.fill();
@@ -374,8 +395,8 @@ export function initSphere(canvas: HTMLCanvasElement, host: HTMLElement = canvas
       ctx.stroke();
     }
 
-    // Light spilling over the front panels
-    drawRays(t + 3, intro * (0.35 + hover * 0.5));
+    // Light spilling over the front panels (skipped on mobile — full-screen additive blending is costly)
+    if (!lite) drawRays(t + 3, intro * (0.35 + hover * 0.5));
   }
 
   const loop = (now: number) => {

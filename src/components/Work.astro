@@ -23,9 +23,16 @@ const groups = ['All', 'SaaS & Apps', 'Immersive & WebAR', 'Brand & Corporate'] 
         featured.map((p, i) => (
           <article class:list={['feature', { 'feature--flip': i % 2 === 1 }]}>
             <div class="feature__visual" data-feature-visual>
-              {p.media.kind === 'model' && <ModelStage src={p.media.src} alt={p.media.alt} credit={p.media.credit} />}
+              {p.media.kind === 'model' && (
+                <ModelStage src={p.media.src} poster={p.media.poster} alt={p.media.alt} credit={p.media.credit} />
+              )}
               {p.media.kind === 'panorama' && (
-                <PanoramaStage src={p.media.src} credit={p.media.credit} startYaw={p.media.startYaw} />
+                <PanoramaStage
+                  src={p.media.src}
+                  srcSmall={p.media.srcSmall}
+                  credit={p.media.credit}
+                  startYaw={p.media.startYaw}
+                />
               )}
               {p.media.kind === 'svg' && <ProjectVisual />}
             </div>

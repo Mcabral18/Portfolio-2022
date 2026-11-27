@@ -82,6 +82,13 @@ const primary = nav.filter((l) => l.id !== 'contact');
   .nav.is-scrolled::before {
     opacity: 1;
   }
+  /* Phones: solid bar instead of live blur over canvases/WebGL (expensive on mobile GPUs) */
+  @media (max-width: 900px), (pointer: coarse) {
+    .nav::before {
+      background: rgb(20 26 25 / 0.94);
+      backdrop-filter: none;
+    }
+  }
   .nav.is-hidden {
     transform: translateY(-100%);
   }
