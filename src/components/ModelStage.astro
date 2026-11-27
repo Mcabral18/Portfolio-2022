@@ -145,6 +145,22 @@ const { src, alt, credit, poster } = Astro.props;
     letter-spacing: 0.16em;
     text-transform: uppercase;
   }
+
+  /* Narrow stages: the HUD chip and the AR button don't fit side by side at the top.
+     Move AR to the bottom centre (where the drag hint would sit) and drop the hint. */
+  @media (max-width: 900px) {
+    .stage__ar {
+      top: auto;
+      right: auto;
+      bottom: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+    .stage--model .stage__hint {
+      display: none;
+    }
+  }
 </style>
 
 <script>
