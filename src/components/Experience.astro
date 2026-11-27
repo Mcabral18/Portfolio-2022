@@ -1,0 +1,136 @@
+---
+import { experience } from '../data/experience';
+---
+
+<section id="experience" class="section experience theme-light" aria-labelledby="experience-title">
+  <div class="container experience__grid">
+    <header class="experience__head">
+      <p class="label" data-reveal>04 — Experience</p>
+      <h2 id="experience-title" class="experience__title" data-reveal>The path so far.</h2>
+      <p class="experience__intro" data-reveal>
+        From design-led multimedia studies to custom WordPress at scale, to SaaS and immersive platforms built on Vue
+        and Nuxt.
+      </p>
+    </header>
+
+    <div class="timeline-wrap">
+    <span class="timeline__track" aria-hidden="true"><span class="timeline__progress" data-timeline-progress></span></span>
+    <ol class="timeline">
+      {
+        experience.map((item) => (
+          <li class="timeline__item" data-reveal>
+            <span class="timeline__dot" aria-hidden="true" />
+            <p class="timeline__period">{item.period}</p>
+            <h3 class="timeline__role">{item.role}</h3>
+            <p class="timeline__place">{item.place}</p>
+            <p class="timeline__text">{item.text}</p>
+            <ul class="timeline__tags">
+              {item.tags.map((t) => (
+                <li class="tag">{t}</li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .experience__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(2.5rem, 1rem + 6vw, 8rem);
+    align-items: start;
+  }
+
+  .experience__head {
+    position: sticky;
+    top: calc(var(--nav-h) + 2rem);
+    display: grid;
+    gap: 1.5rem;
+  }
+  .experience__title {
+    font-size: var(--fs-2xl);
+  }
+  .experience__intro {
+    max-width: 30rem;
+    font-size: var(--fs-lg);
+    color: var(--c-text-muted);
+  }
+
+  .timeline-wrap {
+    position: relative;
+  }
+  .timeline {
+    position: relative;
+    display: grid;
+    gap: clamp(3rem, 2rem + 3vw, 5rem);
+    padding-left: 2.5rem;
+  }
+  .timeline__track {
+    position: absolute;
+    left: 5px;
+    top: 0.6rem;
+    bottom: 0;
+    width: 1px;
+    background: var(--c-line-strong);
+  }
+  .timeline__progress {
+    position: absolute;
+    inset: 0;
+    background: var(--c-teal);
+    transform-origin: top;
+  }
+
+  .timeline__item {
+    position: relative;
+    display: grid;
+    gap: 0.6rem;
+  }
+  .timeline__dot {
+    position: absolute;
+    left: calc(-2.5rem + 0px);
+    top: 0.45rem;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--c-mint);
+    border: 2px solid var(--c-teal);
+    box-shadow: 0 0 0 5px var(--c-mint);
+  }
+  .timeline__period {
+    font-family: var(--f-mono);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--c-teal);
+  }
+  .timeline__role {
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+  }
+  .timeline__place {
+    font-weight: 500;
+    color: #8a5f3c; /* beige darkened for contrast on mint */
+  }
+  .timeline__text {
+    max-width: 52ch;
+    color: var(--c-text-muted);
+  }
+  .timeline__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 0.5rem;
+  }
+
+  @media (max-width: 960px) {
+    .experience__grid {
+      grid-template-columns: 1fr;
+    }
+    .experience__head {
+      position: static;
+    }
+  }
+</style>

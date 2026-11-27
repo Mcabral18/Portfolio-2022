@@ -1,0 +1,58 @@
+---
+import Logo from '../assets/logo.svg';
+import { site } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <Logo width={20} height={24} aria-hidden="true" />
+      <span>© {year} {site.name}</span>
+    </div>
+    <a href="#top" class="footer__top">
+      Back to top
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+        <path d="M6 11V1M1.5 5.5L6 1l4.5 4.5" stroke="currentColor" stroke-width="1.3"></path>
+      </svg>
+    </a>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--c-ink-deeper);
+    border-top: 1px solid var(--c-line);
+  }
+  .footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    padding-block: 2rem;
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-text-muted);
+  }
+  .footer__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+  .footer__brand :global(svg) {
+    color: var(--c-mint);
+  }
+  .footer__top {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: color 0.3s;
+  }
+  .footer__top:hover {
+    color: var(--c-peach);
+  }
+</style>

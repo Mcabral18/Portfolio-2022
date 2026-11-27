@@ -1,0 +1,321 @@
+---
+import HudButton from './HudButton.astro';
+import { site } from '../data/site';
+---
+
+<section id="top" class="hero" aria-labelledby="hero-title">
+  <div class="hero__bg" aria-hidden="true">
+    <div class="hero__grid"></div>
+    <div class="hero__orb hero__orb--teal"></div>
+    <div class="hero__orb hero__orb--peach"></div>
+  </div>
+  <canvas class="hero__canvas" aria-hidden="true"></canvas>
+
+  <div class="hero__frame" aria-hidden="true">
+    <span class="corner corner--tl"></span>
+    <span class="corner corner--tr"></span>
+    <span class="corner corner--bl"></span>
+    <span class="corner corner--br"></span>
+    <span class="hero__coords">Drag to rotate · 3D / 2D canvas</span>
+  </div>
+
+  <div class="hero__content container">
+    <p class="label" data-hero-in>Welcome</p>
+
+    <h1 id="hero-title" class="hero__title" data-hero-title>
+      <span class="hero__line hero__line--glow">Marco</span>
+      <span class="hero__line">Cabral</span>
+      <span class="sr-only">, Frontend Developer</span>
+    </h1>
+
+    <p class="hero__role" data-hero-in>
+      <span class="hero__slash" aria-hidden="true">//</span>
+      <span data-scramble data-roles={JSON.stringify(site.roles)}>{site.roles[0]}</span>
+    </p>
+
+    <p class="hero__lead" data-hero-in>
+      Engineering scalable web applications and immersive digital experiences — from geospatial SaaS to WebAR —
+      with Vue, Nuxt &amp; TypeScript.
+    </p>
+
+    <div class="hero__actions" data-hero-in>
+      <HudButton href="#work">Discover</HudButton>
+      <a class="hero__secondary" href="#contact">Get in touch</a>
+    </div>
+  </div>
+
+  <div class="hero__bar container" data-hero-in>
+    <a href="#work" class="hero__scroll">
+      <span class="hero__scroll-line" aria-hidden="true"></span>
+      Scroll
+    </a>
+    <p class="hero__stack">Vue 3 · Nuxt 3 · TypeScript · Pinia · Geospatial · WebAR</p>
+    <ul class="hero__social">
+      <li><a href={site.social.linkedin} target="_blank" rel="noopener">LinkedIn</a></li>
+      <li><a href={site.social.github} target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 60% 70% at 66% 50%, rgb(17 100 102 / 0.38), transparent 70%),
+      radial-gradient(ellipse 120% 90% at 50% 120%, rgb(17 100 102 / 0.2), transparent 60%),
+      linear-gradient(180deg, var(--c-ink-deeper), var(--c-ink-deep));
+  }
+
+  /* ---------- Ambient background ---------- */
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* Fine blueprint grid, faded out away from the sphere */
+  .hero__grid {
+    position: absolute;
+    inset: -64px;
+    background-image:
+      linear-gradient(rgb(209 232 226 / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(209 232 226 / 0.05) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 45% 60% at 66% 50%, #000 0%, transparent 75%);
+    animation: grid-drift 40s linear infinite;
+  }
+  @keyframes grid-drift {
+    to { transform: translate(64px, 64px); }
+  }
+
+  /* Two slow, heavily blurred light pools */
+  .hero__orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    animation: orb-float 26s ease-in-out infinite alternate;
+  }
+  .hero__orb--teal {
+    width: 38vw;
+    aspect-ratio: 1;
+    left: 2%;
+    top: 8%;
+    background: rgb(17 100 102 / 0.35);
+  }
+  .hero__orb--peach {
+    width: 26vw;
+    aspect-ratio: 1;
+    right: 4%;
+    bottom: -6%;
+    background: rgb(255 203 154 / 0.1);
+    animation-duration: 32s;
+    animation-direction: alternate-reverse;
+  }
+  @keyframes orb-float {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(6vw, 4vh) scale(1.15); }
+  }
+
+  .hero__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    touch-action: pan-y;
+  }
+
+  /* HUD frame */
+  .hero__frame {
+    position: absolute;
+    inset: calc(var(--nav-h) + 0.5rem) var(--gutter) 5.5rem;
+    pointer-events: none;
+    border: 1px solid var(--c-line);
+  }
+  .corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--c-teal-glow);
+  }
+  .corner--tl { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+  .corner--tr { top: -1px; right: -1px; border-left: 0; border-bottom: 0; }
+  .corner--bl { bottom: -1px; left: -1px; border-right: 0; border-top: 0; }
+  .corner--br { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+
+  .hero__coords {
+    position: absolute;
+    right: 1rem;
+    top: 0.9rem;
+    font-family: var(--f-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--c-text-muted);
+  }
+
+  .hero__content {
+    position: relative;
+    align-self: center;
+    padding-top: var(--nav-h);
+    pointer-events: none;
+  }
+  /* :global so links rendered by child components (HudButton) are clickable too */
+  .hero__content :global(a) {
+    pointer-events: auto;
+  }
+  .hero__content > * + * {
+    margin-top: 1.75rem;
+  }
+  .hero__content .label {
+    padding-left: clamp(0rem, 2vw, 2rem);
+  }
+
+  .hero__title {
+    display: grid;
+    font-family: var(--f-display);
+    font-size: clamp(2.75rem, 1rem + 6.4vw, 6.25rem);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    padding-left: clamp(0rem, 2vw, 2rem);
+  }
+  .hero__line--glow {
+    color: var(--c-teal-glow);
+    /* drop-shadow on the line (not text-shadow) so SplitText's char masks don't clip the glow */
+    filter: drop-shadow(0 0 22px rgb(95 212 200 / 0.35));
+  }
+
+  .hero__role {
+    padding-left: clamp(0rem, 2vw, 2rem);
+    font-family: var(--f-mono);
+    font-size: var(--fs-sm);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--c-peach);
+  }
+  .hero__slash {
+    color: var(--c-teal-glow);
+    margin-right: 0.5rem;
+  }
+
+  .hero__lead {
+    max-width: 34rem;
+    padding-left: clamp(0rem, 2vw, 2rem);
+    font-size: var(--fs-lg);
+    line-height: 1.55;
+    color: var(--c-text-muted);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2rem;
+    padding-left: clamp(0rem, 2vw, 2rem);
+  }
+  .hero__secondary {
+    font-size: var(--fs-sm);
+    color: var(--c-mint);
+    border-bottom: 1px solid var(--c-line-strong);
+    padding-bottom: 0.2rem;
+    transition: border-color 0.3s, color 0.3s;
+  }
+  .hero__secondary:hover {
+    color: var(--c-peach);
+    border-color: var(--c-peach);
+  }
+
+  .hero__bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    height: 5.5rem;
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--c-text-muted);
+  }
+  .hero__scroll {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+  .hero__scroll-line {
+    position: relative;
+    width: 1px;
+    height: 34px;
+    background: var(--c-line-strong);
+    overflow: hidden;
+  }
+  .hero__scroll-line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--c-peach);
+    animation: scroll-line 2.2s var(--ease-out) infinite;
+  }
+  @keyframes scroll-line {
+    0% { transform: translateY(-100%); }
+    60%, 100% { transform: translateY(100%); }
+  }
+  .hero__social {
+    display: flex;
+    gap: 1.5rem;
+  }
+  .hero__social a:hover,
+  .hero__scroll:hover {
+    color: var(--c-peach);
+  }
+
+  @media (max-width: 959px) {
+    .hero__content {
+      align-self: end;
+      padding-top: 52svh;
+    }
+    .hero__content > * + * {
+      margin-top: 1.25rem;
+    }
+    .hero__coords,
+    .hero__bar {
+      display: none;
+    }
+    .hero__frame {
+      bottom: 1rem;
+    }
+    .hero__grid {
+      mask-image: radial-gradient(ellipse 70% 40% at 50% 30%, #000 0%, transparent 75%);
+    }
+    .hero__orb--teal {
+      width: 80vw;
+    }
+    .hero__orb--peach {
+      width: 60vw;
+    }
+    .hero__content {
+      padding-bottom: 2.5rem;
+    }
+    .hero__title {
+      letter-spacing: 0.16em;
+    }
+  }
+</style>
+
+<script>
+  import { initSphere } from '../scripts/sphere';
+  import { initScramble } from '../scripts/scramble';
+
+  const hero = document.querySelector<HTMLElement>('.hero')!;
+  initSphere(hero.querySelector('canvas')!, hero);
+
+  const scramble = hero.querySelector<HTMLElement>('[data-scramble]');
+  if (scramble) initScramble(scramble);
+</script>

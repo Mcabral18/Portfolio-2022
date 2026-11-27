@@ -1,0 +1,124 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  credit: string;
+}
+const { src, alt, credit } = Astro.props;
+---
+
+<div class="stage stage--model" data-model-stage>
+  <model-viewer
+    src={src}
+    alt={alt}
+    camera-controls
+    disable-zoom
+    disable-pan
+    auto-rotate
+    auto-rotate-delay="1500"
+    rotation-per-second="16deg"
+    interaction-prompt="none"
+    touch-action="pan-y"
+    camera-orbit="0deg 80deg 105%"
+    shadow-intensity="1.2"
+    shadow-softness="0.9"
+    exposure="1.05"
+    environment-image="neutral"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    loading="lazy"
+    reveal="auto"
+  >
+    <button slot="ar-button" class="stage__ar" type="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <path d="M12 2l9 5v10l-9 5-9-5V7z M3 7l9 5 9-5 M12 12v10"></path>
+      </svg>
+      View in your space
+    </button>
+    <div slot="progress-bar"></div>
+  </model-viewer>
+
+  <div class="stage__loader" data-loader aria-hidden="true">
+    <span>Loading 3D model</span>
+    <span class="stage__bar"><i data-bar></i></span>
+  </div>
+
+  <div class="stage__hud" aria-hidden="true">
+    <span class="stage__chip"><i class="stage__live"></i>3D · WebAR ready</span>
+  </div>
+  <p class="stage__hint" aria-hidden="true">Drag to orbit</p>
+  <p class="stage__credit">{credit}</p>
+</div>
+
+<style>
+  .stage--model {
+    background:
+      radial-gradient(ellipse 55% 50% at 50% 55%, rgb(17 100 102 / 0.45), transparent 70%),
+      radial-gradient(ellipse 30% 20% at 50% 88%, rgb(255 203 154 / 0.12), transparent 70%),
+      var(--c-ink-deeper);
+  }
+
+  model-viewer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    --poster-color: transparent;
+    --progress-bar-height: 0;
+    opacity: 0;
+    transition: opacity 0.8s var(--ease-out);
+  }
+  .stage--model.is-loaded model-viewer {
+    opacity: 1;
+  }
+
+  .stage__ar {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 1.1rem;
+    border: 1px solid var(--c-peach);
+    background: rgb(20 26 25 / 0.75);
+    backdrop-filter: blur(6px);
+    color: var(--c-peach);
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+</style>
+
+<script>
+  const stages = document.querySelectorAll<HTMLElement>('[data-model-stage]');
+
+  stages.forEach((stage) => {
+    const viewer = stage.querySelector('model-viewer')!;
+    const bar = stage.querySelector<HTMLElement>('[data-bar]')!;
+
+    viewer.addEventListener('progress', (e) => {
+      const p = (e as CustomEvent<{ totalProgress: number }>).detail.totalProgress;
+      bar.style.transform = `scaleX(${p})`;
+    });
+    viewer.addEventListener('load', () => stage.classList.add('is-loaded'));
+    viewer.addEventListener('camera-change', (e) => {
+      if ((e as CustomEvent<{ source: string }>).detail.source === 'user-interaction') {
+        stage.classList.add('has-interacted');
+      }
+    });
+
+    // Only pull in model-viewer (and three.js) when the stage is about to be seen
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        import('@google/model-viewer');
+      },
+      { rootMargin: '500px 0px' },
+    );
+    io.observe(stage);
+  });
+</script>

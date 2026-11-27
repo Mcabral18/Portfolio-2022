@@ -1,0 +1,99 @@
+---
+interface Props {
+  src: string;
+  credit: string;
+  startYaw?: number;
+}
+const { src, credit, startYaw = 0 } = Astro.props;
+---
+
+<div class="stage stage--pano" data-panorama data-src={src} data-start-yaw={startYaw}>
+  <canvas
+    tabindex="0"
+    role="img"
+    aria-label="Interactive 360° panorama of a waterfront. Drag or use the arrow keys to look around."
+  ></canvas>
+
+  <div class="stage__loader" aria-hidden="true">
+    <span>Loading 360° tour</span>
+    <span class="stage__bar stage__bar--indeterminate"><i></i></span>
+  </div>
+
+  <div class="stage__hud" aria-hidden="true">
+    <span class="stage__chip"><i class="stage__live"></i>360° · Virtual tour</span>
+    <span class="compass">
+      <span class="compass__needle"></span>
+      <span class="compass__n">N</span>
+    </span>
+  </div>
+  <p class="stage__hint" aria-hidden="true">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <path d="M8 12h8M5 9l-3 3 3 3M19 9l3 3-3 3"></path>
+    </svg>
+    Drag to explore
+  </p>
+  <p class="stage__credit">{credit}</p>
+</div>
+
+<style>
+  .stage--pano {
+    background: var(--c-ink-deeper) center / cover no-repeat;
+  }
+  .stage--pano canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    touch-action: pan-y;
+    opacity: 0;
+    transition: opacity 0.9s var(--ease-out);
+  }
+  .stage--pano.is-loaded canvas {
+    opacity: 1;
+  }
+  .stage--pano.is-dragging canvas {
+    cursor: grabbing;
+  }
+  .stage--pano canvas:focus-visible {
+    outline-offset: -4px;
+  }
+  .stage--pano.is-fallback .stage__loader {
+    display: none;
+  }
+
+  .compass {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--c-line-strong);
+    border-radius: 50%;
+    background: rgb(20 26 25 / 0.55);
+    backdrop-filter: blur(6px);
+  }
+  .compass__needle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2px;
+    height: 14px;
+    margin: -14px 0 0 -1px;
+    background: linear-gradient(var(--c-peach), transparent);
+    transform-origin: 50% 100%;
+    transform: rotate(var(--heading, 0deg));
+  }
+  .compass__n {
+    position: absolute;
+    top: -1.1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--f-mono);
+    font-size: 0.6rem;
+    color: var(--c-text-muted);
+  }
+</style>
+
+<script>
+  import { initPanorama } from '../scripts/panorama';
+  document.querySelectorAll<HTMLElement>('[data-panorama]').forEach(initPanorama);
+</script>

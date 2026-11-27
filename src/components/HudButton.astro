@@ -1,0 +1,92 @@
+---
+interface Props {
+  href?: string;
+  type?: 'button' | 'submit';
+  class?: string;
+}
+const { href, type = 'button', class: className } = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag class:list={['hud-btn', className]} href={href} type={href ? undefined : type}>
+  <span class="hud-btn__label"><slot /></span>
+  <svg class="hud-btn__arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+    <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.4"></path>
+  </svg>
+</Tag>
+
+<style>
+  .hud-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.05rem 1.6rem;
+    border: 1px solid var(--c-line-strong);
+    font-family: var(--f-mono);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--c-text);
+    background: rgb(20 26 25 / 0.35);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    transition: border-color 0.4s var(--ease-out), color 0.4s var(--ease-out);
+  }
+
+  /* Corner brackets */
+  .hud-btn::before,
+  .hud-btn::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 1px solid var(--c-peach);
+    transition: width 0.4s var(--ease-out), height 0.4s var(--ease-out);
+  }
+  .hud-btn::before {
+    top: -1px;
+    left: -1px;
+    border-right: 0;
+    border-bottom: 0;
+  }
+  .hud-btn::after {
+    right: -1px;
+    bottom: -1px;
+    border-left: 0;
+    border-top: 0;
+  }
+
+  /* Fill sweep */
+  .hud-btn__label::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--c-teal);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s var(--ease-out);
+  }
+
+  .hud-btn__arrow {
+    transition: transform 0.4s var(--ease-out);
+  }
+
+  .hud-btn:hover {
+    border-color: var(--c-teal);
+    color: var(--c-mint);
+  }
+  .hud-btn:hover::before,
+  .hud-btn:hover::after {
+    width: calc(100% + 2px);
+    height: calc(100% + 2px);
+  }
+  .hud-btn:hover .hud-btn__label::after {
+    transform: scaleX(1);
+  }
+  .hud-btn:hover .hud-btn__arrow {
+    transform: translateX(4px);
+  }
+</style>

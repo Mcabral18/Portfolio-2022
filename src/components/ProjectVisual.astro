@@ -1,0 +1,76 @@
+---
+/** Animated geofencing illustration (VineWine). */
+const vertices = [[120, 90], [250, 70], [300, 160], [230, 230], [130, 200]];
+---
+
+<div class="stage stage--svg">
+  <svg class="pv" viewBox="0 0 400 300" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <radialGradient id="pv-glow" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#5fd4c8" stop-opacity="0.32"></stop>
+        <stop offset="100%" stop-color="#5fd4c8" stop-opacity="0"></stop>
+      </radialGradient>
+      <pattern id="pv-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M20 0H0V20" fill="none" stroke="#d1e8e2" stroke-opacity="0.06"></path>
+      </pattern>
+    </defs>
+
+    <rect width="400" height="300" fill="#1a2220"></rect>
+    <rect width="400" height="300" fill="url(#pv-grid)"></rect>
+    <rect width="400" height="300" fill="url(#pv-glow)"></rect>
+
+    {
+      [0, 1, 2, 3, 4, 5].map((i) => (
+        <path
+          d={`M-10 ${70 + i * 34} C 80 ${40 + i * 34}, 160 ${110 + i * 30}, 240 ${70 + i * 34} S 380 ${50 + i * 36}, 420 ${80 + i * 32}`}
+          fill="none"
+          stroke="#d1e8e2"
+          stroke-opacity={0.08 + i * 0.02}
+        />
+      ))
+    }
+    <polygon class="pv-dash" points={vertices.map((v) => v.join(',')).join(' ')} fill="#ffcb9a" fill-opacity="0.12" stroke="#ffcb9a" stroke-width="1.5"></polygon>
+    {vertices.map(([x, y]) => <rect x={x - 4} y={y - 4} width="8" height="8" fill="#141a19" stroke="#ffcb9a" />)}
+    <circle class="pv-pulse" cx="205" cy="150" r="22" fill="none" stroke="#5fd4c8" stroke-opacity="0.6"></circle>
+    <circle cx="205" cy="150" r="4" fill="#5fd4c8"></circle>
+    <path d="M205 120v14M205 166v14M175 150h14M221 150h14" stroke="#5fd4c8" stroke-opacity="0.7"></path>
+    <text x="232" y="146" fill="#d1e8e2" fill-opacity="0.6" font-family="JetBrains Mono, monospace" font-size="7" letter-spacing="1">
+      PARCEL 04 · 2.4 HA
+    </text>
+  </svg>
+
+  <div class="stage__hud" aria-hidden="true">
+    <span class="stage__chip"><i class="stage__live"></i>Geofencing · Spatial analysis</span>
+  </div>
+</div>
+
+<style>
+  .pv {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transition: transform 1.2s var(--ease-out);
+  }
+  .stage--svg:hover .pv {
+    transform: scale(1.04);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .pv-dash {
+      stroke-dasharray: 6 6;
+      animation: pv-dash 6s linear infinite;
+    }
+    .pv-pulse {
+      transform-origin: 205px 150px;
+      animation: pv-pulse 2.4s var(--ease-out) infinite;
+    }
+  }
+  @keyframes pv-dash {
+    to { stroke-dashoffset: -120; }
+  }
+  @keyframes pv-pulse {
+    0% { transform: scale(0.6); opacity: 1; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+</style>
