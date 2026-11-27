@@ -1,5 +1,6 @@
 import './App.css';
 import React, { useState } from "react";
+import { Analytics } from '@vercel/analytics/react';
 import Preloader from './components/Preloader';
 import Navbar from './components/Navbar';
 import Home from "./pages-blocks/Home";
@@ -25,6 +26,7 @@ function App() {
       <Portfolio />
       <Contact />
       <Footer />
+      <Analytics />
       {/* Page Layout */}
       {/* Import Footer */}
 
